@@ -18,6 +18,10 @@ A lightweight 3D wireframe renderer built from scratch in JavaScript, using a Ca
 | `S` | Move backward |
 | `A` | Strafe left |
 | `D` | Strafe right |
+| `<SPACE> ` | Move up |
+| `c` | Move down |
+| `↑` | Turn camera up |
+| `↓` | Turn camera down |
 | `←` | Turn camera left |
 | `→` | Turn camera right |
 
@@ -73,7 +77,19 @@ let shape = shapes.myShape
 let fs = shape.fs
 let vs = shape.vs
 ```
+## Change rotation mode
+```js
+// uncoment one of them (line 211)
 
+// rotate on both axis
+// draw_line_3d(rotate_yz(rotate_xz(a, angle), angle), rotate_yz(rotate_xz(b, angle), angle))
+
+// rotate on xz axis
+draw_line_3d(rotate_xz(a, angle), rotate_xz(b, angle))
+
+// Don't rotate
+// draw_line_3d(a, b)
+```
 ## Notes
 
 - Angles are stored in **degrees** internally and converted to radians with `rad()` when passed to `Math.sin/cos`
