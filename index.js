@@ -145,15 +145,16 @@ function translate_z({x, y, z}, dz) {
 }
 
 function rotate_yz({x, y, z}, angle) {
-	const c = Math.cos(angle)
-	const s = Math.sin(angle)
+    const c = Math.cos(angle)
+    const s = Math.sin(angle)
 
- 	return {
- 		x, 
- 		y: y * s + z * c,
-		z: y * c - z * s,
- 	};
-} 
+    return {
+        x,
+        y: y * c - z * s,
+        z: y * s + z * c,
+    };
+}
+
 function rotate_xz({x, y, z}, angle) {
 	const c = Math.cos(angle)
 	const s = Math.sin(angle)
@@ -168,22 +169,26 @@ function rotate_xz({x, y, z}, angle) {
 
 
 const FPS = 50;
-let dz = 0;
+let dz = 2;
 let angle = 0;
 
 let camera = {
 	x: 0,
 	y: 0,
 	z: -2,
-	angle: 0
+	angle: 0,
+	up_angle: 0
 }
 
 function postion_by_camera(p, c) {
-	return rotate_xz({
+	offset = {
 		x: p.x - c.x,
 		y: p.y - c.y,
 		z: p.z - c.z,
-	}, -rad(c.angle))
+	}
+	angle_applied = rotate_xz(offset, -rad(c.angle))
+	up_angle_applied = rotate_yz(angle_applied, rad(c.up_angle))
+	return up_angle_applied
 }
 
 function draw_line_3d(a, b) {
@@ -203,7 +208,9 @@ function frame() {
 		for (let i = 0; i < f.length; ++i) {
 			const a = vs[f[i]];
 			const b = vs[f[(i + 1) % f.length]];
-			draw_line_3d(rotate_yz(rotate_xz(a, angle), angle), rotate_yz(rotate_xz(b, angle), angle))
+			// draw_line_3d(rotate_yz(rotate_xz(a, angle), angle), rotate_yz(rotate_xz(b, angle), angle))
+			draw_line_3d(rotate_xz(a, angle), rotate_xz(b, angle))
+			// draw_line_3d(a, b)
 		}
 	}
 	setTimeout(frame, 1000/FPS);
@@ -213,6 +220,8 @@ function frame() {
 document.addEventListener("keydown", (e) => {
 	if 		(e.key == "ArrowLeft") camera.angle = (camera.angle + 4) % 360;
 	else if (e.key == "ArrowRight") camera.angle = (camera.angle - 4) % 360;
+	else if (e.key == "ArrowUp") camera.up_angle = (camera.up_angle + 4) % 360;
+	else if (e.key == "ArrowDown") camera.up_angle = (camera.up_angle - 4) % 360;
 	else if (e.key === "w") {
 		camera.x -= Math.sin(rad(camera.angle)) * 0.25
 		camera.z += Math.cos(rad(camera.angle)) * 0.25
@@ -229,6 +238,8 @@ document.addEventListener("keydown", (e) => {
 		camera.x += Math.cos(rad(camera.angle)) * 0.25
 		camera.z += Math.sin(rad(camera.angle)) * 0.25
 	}
+	else if (e.key == " ") camera.y += 0.25
+	else if (e.key == "c") camera.y -= 0.25
 })
 
 let shape = shapes.tetrahedron
