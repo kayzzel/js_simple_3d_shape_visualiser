@@ -81,7 +81,129 @@ const shapes = {
 		]
 	},
 
+	octahedron: {
+		vs: [
+			{x:  0.4, y:  0, z:  0}, // 0 right
+			{x: -0.4, y:  0, z:  0}, // 1 left
+			{x:  0, y:  0.4, z:  0}, // 2 top
+			{x:  0, y: -0.4, z:  0}, // 3 bottom
+			{x:  0, y:  0, z:  0.4}, // 4 front
+			{x:  0, y:  0, z: -0.4}, // 5 back
+		],
+		fs: [
+			[2, 0, 4], [2, 4, 1], [2, 1, 5], [2, 5, 0], // top 4 faces
+			[3, 4, 0], [3, 1, 4], [3, 5, 1], [3, 0, 5], // bottom 4 faces
+		]
+	},
 
+	icosahedron: {
+		vs: (() => {
+			const t = (1 + Math.sqrt(5)) / 2 * 0.2;
+			const s = 0.2;
+			return [
+				{x: -s, y:  t, z:  0}, // 0
+				{x:  s, y:  t, z:  0}, // 1
+				{x: -s, y: -t, z:  0}, // 2
+				{x:  s, y: -t, z:  0}, // 3
+				{x:  0, y: -s, z:  t}, // 4
+				{x:  0, y:  s, z:  t}, // 5
+				{x:  0, y: -s, z: -t}, // 6
+				{x:  0, y:  s, z: -t}, // 7
+				{x:  t, y:  0, z: -s}, // 8
+				{x:  t, y:  0, z:  s}, // 9
+				{x: -t, y:  0, z: -s}, // 10
+				{x: -t, y:  0, z:  s}, // 11
+			];
+		})(),
+		fs: [
+			[0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
+			[1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
+			[3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
+			[4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1],
+		]
+	},
+
+	diamond: {
+		vs: [
+			{x:  0,    y:  0.4,  z:  0   }, // 0 top
+			{x:  0.25, y:  0.1,  z:  0   }, // 1
+			{x:  0,    y:  0.1,  z:  0.25}, // 2
+			{x: -0.25, y:  0.1,  z:  0   }, // 3
+			{x:  0,    y:  0.1,  z: -0.25}, // 4
+			{x:  0.15, y: -0.1,  z:  0.15}, // 5
+			{x: -0.15, y: -0.1,  z:  0.15}, // 6
+			{x: -0.15, y: -0.1,  z: -0.15}, // 7
+			{x:  0.15, y: -0.1,  z: -0.15}, // 8
+			{x:  0,    y: -0.4,  z:  0   }, // 9 bottom
+		],
+		fs: [
+			[0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1], // top crown
+			[1, 2, 5], [2, 3, 6], [3, 4, 7], [4, 1, 8], // upper girdle
+			[2, 5, 6], [3, 6, 7], [4, 7, 8], [1, 8, 5], // lower girdle
+			[5, 9, 6], [6, 9, 7], [7, 9, 8], [8, 9, 5], // bottom pavilion
+		]
+	},
+
+	torus: {
+		vs: (() => {
+			const R = 0.3, r = 0.12;
+			const seg = 10, tube = 8;
+			const pts = [];
+			for (let i = 0; i < seg; i++) {
+				const a = (i / seg) * Math.PI * 2;
+				for (let j = 0; j < tube; j++) {
+					const b = (j / tube) * Math.PI * 2;
+					pts.push({
+						x: (R + r * Math.cos(b)) * Math.cos(a),
+						y: r * Math.sin(b),
+						z: (R + r * Math.cos(b)) * Math.sin(a),
+					});
+				}
+			}
+			return pts;
+		})(),
+		fs: (() => {
+			const seg = 10, tube = 8;
+			const faces = [];
+			for (let i = 0; i < seg; i++) {
+				for (let j = 0; j < tube; j++) {
+					const a = i * tube + j;
+					const b = i * tube + (j + 1) % tube;
+					const c = ((i + 1) % seg) * tube + j;
+					const d = ((i + 1) % seg) * tube + (j + 1) % tube;
+					faces.push([a, b, d, c]);
+				}
+			}
+			return faces;
+		})(),
+	},
+
+	star: {
+		vs: [
+			{x:  0,    y:  0.4,  z:  0   }, // 0 top point
+			{x:  0.4,  y:  0,    z:  0   }, // 1 right point
+			{x:  0,    y: -0.4,  z:  0   }, // 2 bottom point
+			{x: -0.4,  y:  0,    z:  0   }, // 3 left point
+			{x:  0,    y:  0,    z:  0.4 }, // 4 front point
+			{x:  0,    y:  0,    z: -0.4 }, // 5 back point
+			{x:  0.15, y:  0.15, z:  0.15}, // 6 inner
+			{x: -0.15, y:  0.15, z:  0.15}, // 7 inner
+			{x: -0.15, y: -0.15, z:  0.15}, // 8 inner
+			{x:  0.15, y: -0.15, z:  0.15}, // 9 inner
+			{x:  0.15, y:  0.15, z: -0.15}, // 10 inner
+			{x: -0.15, y:  0.15, z: -0.15}, // 11 inner
+			{x: -0.15, y: -0.15, z: -0.15}, // 12 inner
+			{x:  0.15, y: -0.15, z: -0.15}, // 13 inner
+		],
+		fs: [
+			[0, 6, 7], [0, 7, 11], [0, 11, 10], [0, 10, 6],
+			[2, 8, 9], [2, 9, 13], [2, 13, 12], [2, 12, 8],
+			[1, 6, 9], [1, 9, 13], [1, 13, 10], [1, 10, 6],
+			[3, 7, 8], [3, 8, 12], [3, 12, 11], [3, 11, 7],
+			[4, 6, 7], [4, 7, 8],  [4, 8, 9],   [4, 9, 6],
+			[5, 10, 11], [5, 11, 12], [5, 12, 13], [5, 13, 10],
+		]
+	},
 }
 
 const BACKGROUND =  "#101010";
@@ -204,6 +326,7 @@ function frame() {
 
 	clear()
 
+
 	for (const f of fs) {
 		for (let i = 0; i < f.length; ++i) {
 			const a = vs[f[i]];
@@ -242,7 +365,7 @@ document.addEventListener("keydown", (e) => {
 	else if (e.key == "c") camera.y -= 0.25
 })
 
-let shape = shapes.tetrahedron
+let shape = shapes.torus
 let fs = shape.fs
 let vs = shape.vs
 setTimeout(frame, 1000/FPS);
