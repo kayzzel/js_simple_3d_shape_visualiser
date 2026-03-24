@@ -1155,11 +1155,12 @@ function line(p1, p2) {
 }
 
 function screen(p) {
-	// -1..1 => 0..2 => 0..1 =>0 ..w
+	const scale = Math.min(game.width, game.height) / 2;
+
 	return {
-		x: (p.x + 1) / 2 * game.width,
-		y: (1 - (p.y + 1) / 2) * game.height,
-	}
+		x: game.width / 2 + p.x * scale,
+		y: game.height / 2 - p.y * scale,
+	};
 }
 
 function project({x, y, z}) {
