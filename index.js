@@ -1110,6 +1110,106 @@ const shapes = {
 
 		return { vs, fs };
 	})(),
+
+	classical_penis: (() => {
+		const vs = [];
+		const fs = [];
+		const S = 0.55;
+
+		function addVertex(x, y, z) {
+			vs.push({ x: x * S, y: y * S, z: z * S });
+			return vs.length - 1;
+		}
+
+		function addBox(cx, cy, cz, hx, hy, hz) {
+			const v0 = addVertex(cx + hx, cy + hy, cz + hz);
+			const v1 = addVertex(cx - hx, cy + hy, cz + hz);
+			const v2 = addVertex(cx - hx, cy - hy, cz + hz);
+			const v3 = addVertex(cx + hx, cy - hy, cz + hz);
+
+			const v4 = addVertex(cx + hx, cy + hy, cz - hz);
+			const v5 = addVertex(cx - hx, cy + hy, cz - hz);
+			const v6 = addVertex(cx - hx, cy - hy, cz - hz);
+			const v7 = addVertex(cx + hx, cy - hy, cz - hz);
+
+			fs.push([v0, v1, v2, v3]); // front
+			fs.push([v4, v5, v6, v7]); // back
+			fs.push([v0, v4, v7, v3]); // right
+			fs.push([v1, v5, v6, v2]); // left
+			fs.push([v0, v1, v5, v4]); // top
+			fs.push([v3, v2, v6, v7]); // bottom
+		}
+
+		function addFrustumZ(cx, cy, zFront, zBack, frontX, frontY, backX, backY) {
+			const f0 = addVertex(cx + frontX, cy + frontY, zFront);
+			const f1 = addVertex(cx - frontX, cy + frontY, zFront);
+			const f2 = addVertex(cx - frontX, cy - frontY, zFront);
+			const f3 = addVertex(cx + frontX, cy - frontY, zFront);
+
+			const b0 = addVertex(cx + backX, cy + backY, zBack);
+			const b1 = addVertex(cx - backX, cy + backY, zBack);
+			const b2 = addVertex(cx - backX, cy - backY, zBack);
+			const b3 = addVertex(cx + backX, cy - backY, zBack);
+
+			fs.push([f0, f1, f2, f3]); // front
+			fs.push([b0, b1, b2, b3]); // back
+			fs.push([f0, b0, b1, f1]);
+			fs.push([f1, b1, b2, f2]);
+			fs.push([f2, b2, b3, f3]);
+			fs.push([f3, b3, b0, f0]);
+		}
+
+		function addFrustumY(cx, yTop, yBot, cz, topX, topZ, botX, botZ) {
+			const t0 = addVertex(cx + topX, yTop, cz + topZ);
+			const t1 = addVertex(cx - topX, yTop, cz + topZ);
+			const t2 = addVertex(cx - topX, yTop, cz - topZ);
+			const t3 = addVertex(cx + topX, yTop, cz - topZ);
+
+			const b0 = addVertex(cx + botX, yBot, cz + botZ);
+			const b1 = addVertex(cx - botX, yBot, cz + botZ);
+			const b2 = addVertex(cx - botX, yBot, cz - botZ);
+			const b3 = addVertex(cx + botX, yBot, cz - botZ);
+
+			fs.push([t0, t1, t2, t3]); // top
+			fs.push([b0, b1, b2, b3]); // bottom
+			fs.push([t0, b0, b1, t1]);
+			fs.push([t1, b1, b2, t2]);
+			fs.push([t2, b2, b3, t3]);
+			fs.push([t3, b3, b0, t0]);
+		}
+
+		// base pubienne / raccord au bassin
+		addFrustumY(0.00, 0.16, 0.00, -0.01, 0.11, 0.07, 0.14, 0.10);
+
+		// racine
+		addBox(0.00, -0.03, 0.08, 0.06, 0.05, 0.05);
+
+		// verge, légèrement effilée
+		addFrustumZ(0.00, -0.03, 0.34, 0.08, 0.040, 0.045, 0.055, 0.055);
+
+		// gland
+		addBox(0.00, -0.03, 0.39, 0.040, 0.047, 0.028);
+
+		// petit bourrelet du gland
+		addBox(0.00, -0.03, 0.355, 0.045, 0.050, 0.010);
+
+		// dessous pour donner un peu plus de volume
+		addBox(0.00, -0.055, 0.23, 0.028, 0.018, 0.10);
+
+		// scrotum central
+		addBox(0.00, -0.16, 0.03, 0.05, 0.07, 0.05);
+
+		// testicule gauche
+		addBox(-0.055, -0.15, 0.03, 0.045, 0.065, 0.050);
+
+		// testicule droit
+		addBox( 0.055, -0.15, 0.03, 0.045, 0.065, 0.050);
+
+		// liaison haute du scrotum
+		addBox(0.00, -0.09, 0.03, 0.065, 0.025, 0.045);
+
+		return { vs, fs };
+	})(),
 }
 
 const BACKGROUND =  "#101010";
@@ -1281,6 +1381,6 @@ document.addEventListener("keydown", (e) => {
 })
 
 let objects = [
-	{shape: shapes.storm_bama, x: 0, y: 0, z: 2},
+	{shape: shapes.miku, x: 0, y: 0, z: 2},
 ]
 setTimeout(frame, 1000/FPS);
